@@ -1,4 +1,4 @@
-package com.avelibeyli.photoapp.api.users.ui.model;
+package com.avelibeyli.photoapp.api.users.ui.model.signUp;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;

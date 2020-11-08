@@ -1,10 +1,9 @@
 package com.avelibeyli.photoapp.api.users.ui.controller;
 
-import com.avelibeyli.photoapp.api.users.data.UserEntity;
 import com.avelibeyli.photoapp.api.users.service.UserService;
 import com.avelibeyli.photoapp.api.users.shared.UserDto;
-import com.avelibeyli.photoapp.api.users.ui.model.UserRequest;
-import com.avelibeyli.photoapp.api.users.ui.model.UserResponse;
+import com.avelibeyli.photoapp.api.users.ui.model.signUp.UserRequest;
+import com.avelibeyli.photoapp.api.users.ui.model.signUp.UserResponse;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +45,13 @@ public class UsersController {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
 
-
     }
+
+//    @PostMapping("/login")
+//    public ResponseEntity<UserResponse> login(@Valid @RequestBody com.avelibeyli.photoapp.api.users.ui.model.signIn.UserRequest user){
+//
+//        return null;
+//
+//    }
 
 }
