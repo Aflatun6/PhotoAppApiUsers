@@ -6,6 +6,8 @@ import com.avelibeyli.photoapp.api.users.ui.model.signIn.UserRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -28,14 +30,10 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final UserService userService;
     private final Environment env;
-    private final SecretKey secretKey;
-    private final JwtConfig jwtConfig;
 
-    public AuthenticationFilter(UserService userService, Environment env, AuthenticationManager authenticationManager, SecretKey secretKey, JwtConfig jwtConfig) {
+    public AuthenticationFilter(UserService userService, Environment env, AuthenticationManager authenticationManager) {
         this.userService = userService;
         this.env = env;
-        this.secretKey = secretKey;
-        this.jwtConfig = jwtConfig;
         super.setAuthenticationManager(authenticationManager);
     }
 
@@ -65,14 +63,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 //        here we literally create a token and add it to the Header.
         String token = Jwts.builder()
                 .setSubject(userDetails.getUserId())
-                .setIssuedAt(new Date())
-                .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfig.getTokenExpirationAfterDays())))
-//                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
-                
-                .signWith(secretKey)
+                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
+                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
                 .compact();
 
-        response.addHeader(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + token);
+        response.addHeader("token", token);
         response.addHeader("userId", userDetails.getUserId());
 
     }

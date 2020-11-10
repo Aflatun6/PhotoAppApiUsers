@@ -20,16 +20,12 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     private final Environment env;
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
-    private final SecretKey secretKey;
-    private final JwtConfig jwtConfig;
 
     @Autowired
-    public WebSecurity(Environment env, UserService userService, PasswordEncoder passwordEncoder, SecretKey secretKey, JwtConfig jwtConfig) {
+    public WebSecurity(Environment env, UserService userService, PasswordEncoder passwordEncoder) {
         this.env = env;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
-        this.secretKey = secretKey;
-        this.jwtConfig = jwtConfig;
     }
 
     @Override
@@ -47,7 +43,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     }
 
     private AuthenticationFilter getAuthenticationFilter() throws Exception {
-        AuthenticationFilter authenticationFilter = new AuthenticationFilter(userService, env, authenticationManager(), secretKey, jwtConfig);
+        AuthenticationFilter authenticationFilter = new AuthenticationFilter(userService, env, authenticationManager());
         authenticationFilter.setFilterProcessesUrl(env.getProperty("login.url.path"));
         return authenticationFilter;
     }
