@@ -52,9 +52,11 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authResult) throws IOException, ServletException {
-        String username = ((User) authResult.getPrincipal()).getUsername();
+        String username = ((User) authResult.getPrincipal()).getUsername(); // I think this the User.class instance is the principal
         UserDto userDetails = userService.getUserDetailsByEmail(username);
 
+
+//        here we literally create a token and add it to the Header.
         String token = Jwts.builder()
                 .setSubject(userDetails.getUserId())
                 .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))

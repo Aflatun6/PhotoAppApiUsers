@@ -33,8 +33,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 //                .antMatchers("/**").hasIpAddress("192.168.0.1")
                 .antMatchers("/users/**").permitAll()
                 .and()
-                .addFilter(getAuthenticationFilter())
-//              .and()
+                .addFilter(getAuthenticationFilter()) // Here we register our custom filter to the spring security
                 .headers().frameOptions().disable() // this is for h2-console .
                 .and()
                 .csrf().disable()
@@ -49,6 +48,6 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);
+        auth.userDetailsService(userService).passwordEncoder(passwordEncoder);  // here we telling spring which service wee gonna use and what password encoder will be used to perform authentication
     }
 }

@@ -47,11 +47,5 @@ public class UsersController {
 
     }
 
-//    @PostMapping("/login")
-//    public ResponseEntity<UserResponse> login(@Valid @RequestBody com.avelibeyli.photoapp.api.users.ui.model.signIn.UserRequest user){
-//
-//        return null;
-//
-//    }
 
 }
