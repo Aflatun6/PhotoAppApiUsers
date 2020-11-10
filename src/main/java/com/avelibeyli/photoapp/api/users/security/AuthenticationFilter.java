@@ -68,6 +68,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 .setIssuedAt(new Date())
                 .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfig.getTokenExpirationAfterDays())))
 //                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
+                
                 .signWith(secretKey)
                 .compact();
 
