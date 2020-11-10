@@ -5,7 +5,7 @@ import com.avelibeyli.photoapp.api.users.shared.UserDto;
 import com.avelibeyli.photoapp.api.users.ui.model.signIn.UserRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,11 +14,13 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import javax.crypto.SecretKey;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -26,10 +28,14 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
     private final UserService userService;
     private final Environment env;
+    private final SecretKey secretKey;
+    private final JwtConfig jwtConfig;
 
-    public AuthenticationFilter(UserService userService, Environment env, AuthenticationManager authenticationManager) {
+    public AuthenticationFilter(UserService userService, Environment env, AuthenticationManager authenticationManager, SecretKey secretKey, JwtConfig jwtConfig) {
         this.userService = userService;
         this.env = env;
+        this.secretKey = secretKey;
+        this.jwtConfig = jwtConfig;
         super.setAuthenticationManager(authenticationManager);
     }
 
@@ -59,11 +65,13 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 //        here we literally create a token and add it to the Header.
         String token = Jwts.builder()
                 .setSubject(userDetails.getUserId())
-                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
-                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
+                .setIssuedAt(new Date())
+                .setExpiration(java.sql.Date.valueOf(LocalDate.now().plusDays(jwtConfig.getTokenExpirationAfterDays())))
+//                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
+                .signWith(secretKey)
                 .compact();
 
-        response.addHeader("token", token);
+        response.addHeader(jwtConfig.getAuthorizationHeader(), jwtConfig.getTokenPrefix() + token);
         response.addHeader("userId", userDetails.getUserId());
 
     }
