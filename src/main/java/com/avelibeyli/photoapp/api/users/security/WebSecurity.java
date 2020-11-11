@@ -31,11 +31,11 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
+                .addFilter(getAuthenticationFilter()) // Here we register our custom filter to the spring security
                 .authorizeRequests()
 //                .antMatchers("/**").hasIpAddress("192.168.0.1")
                 .antMatchers("/users/**").permitAll()
                 .and()
-                .addFilter(getAuthenticationFilter()) // Here we register our custom filter to the spring security
                 .headers().frameOptions().disable() // this is for h2-console .
                 .and()
                 .csrf().disable()

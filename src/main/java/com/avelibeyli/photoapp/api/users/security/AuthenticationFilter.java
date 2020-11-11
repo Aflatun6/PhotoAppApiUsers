@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Jwts;
 
 import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -50,7 +51,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                             new ArrayList<>()));
 
         } catch (IOException e) {
-            throw new RuntimeException("bad");
+            throw new RuntimeException(e);
         }
     }
 
@@ -64,10 +65,12 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
         String token = Jwts.builder()
                 .setSubject(userDetails.getUserId())
                 .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
-                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
+//                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
+                .signWith(Keys.hmacShaKeyFor(env.getProperty("token.secret").getBytes()))
                 .compact();
 
-        response.addHeader("token", token);
+
+        response.addHeader("uraaa", String.format("Bearer %s", token));
         response.addHeader("userId", userDetails.getUserId());
 
     }
