@@ -2,6 +2,7 @@ package com.avelibeyli.photoapp.api.users.ui.controller;
 
 import com.avelibeyli.photoapp.api.users.service.UserService;
 import com.avelibeyli.photoapp.api.users.shared.UserDto;
+import com.avelibeyli.photoapp.api.users.ui.model.UserResponseModel;
 import com.avelibeyli.photoapp.api.users.ui.model.signUp.UserRequest;
 import com.avelibeyli.photoapp.api.users.ui.model.signUp.UserResponse;
 import org.modelmapper.ModelMapper;
@@ -13,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.ws.rs.Path;
 
 @RestController
 @RequestMapping("/users")
@@ -29,7 +31,7 @@ public class UsersController {
 
     @GetMapping("/status/check")
     public String status() {
-        return "working on the port: " + env.getProperty("local.server.port");
+        return String.format("working on the port: %s, secret key: %s", env.getProperty("local.server.port"), env.getProperty("token.secret"));
     }
 
     @PostMapping
@@ -44,8 +46,15 @@ public class UsersController {
         UserResponse userResponse = mapper.map(savedUser, UserResponse.class);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
-
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<UserResponseModel> getUser(@PathVariable String id) {
+
+        UserDto userDto = userService.getUserDetailsByUserIdWithFeign(id);
+        UserResponseModel returnValue = new ModelMapper().map(userDto, UserResponseModel.class);
+
+        return ResponseEntity.status(HttpStatus.OK).body(returnValue);
+    }
 
 }

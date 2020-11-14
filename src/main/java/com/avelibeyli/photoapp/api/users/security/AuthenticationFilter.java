@@ -62,15 +62,17 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
 
 //        here we literally create a token and add it to the Header.
+        long tokenExpirationTime = Long.parseLong(env.getProperty("token.expiration_time"));
+        String secretToken = env.getProperty("token.secret");
         String token = Jwts.builder()
                 .setSubject(userDetails.getUserId())
-                .setExpiration(new Date(System.currentTimeMillis() + Long.parseLong(env.getProperty("token.expiration_time"))))
+                .setExpiration(new Date(System.currentTimeMillis() + tokenExpirationTime))
 //                .signWith(SignatureAlgorithm.HS512, env.getProperty("token.secret"))
-                .signWith(Keys.hmacShaKeyFor(env.getProperty("token.secret").getBytes()))
+                .signWith(Keys.hmacShaKeyFor(secretToken.getBytes()))
                 .compact();
 
 
-        response.addHeader("uraaa", String.format("Bearer %s", token));
+        response.addHeader("token", String.format("Bearer %s", token));
         response.addHeader("userId", userDetails.getUserId());
 
     }
