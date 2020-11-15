@@ -96,7 +96,9 @@ public class UserServiceImpl implements UserService {
 
         List<AlbumResponseModel> albums = null;
 
+        logger.info("Before calling the Albums microservice");
         albums = albumsServiceClient.getAlbums(id);
+        logger.info("After calling the Albums microservice");
 
 //        try {
 //            albums = albumsServiceClient.getAlbums(id);
